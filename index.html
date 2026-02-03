@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Memento Mori Calendar</title>
   <style>
     body {
@@ -29,12 +30,22 @@
         align-items: center;
       }
     }
+    
 
     .decade {
       display: grid;
       grid-template-columns: repeat(52, 10px);
       grid-auto-rows: 10px;
       gap: 2px;
+    }
+
+      @media (max-width: 600px) {
+      .decade {
+        display: grid;
+        --column-size: calc( (90vw - 51 * 2px) / 52 );
+        grid-template-columns: repeat(52, var(--column-size) );
+        grid-auto-rows: var(--column-size);
+      }
     }
 
 
