@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Memento Mori Calendar</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      background: #f5f5f5;
+      color: #111;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .calendar {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100vw;
+      justify-content: center; 
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      .calendar {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+
+    .decade {
+      display: grid;
+      grid-template-columns: repeat(52, 10px);
+      grid-auto-rows: 10px;
+      gap: 2px;
+    }
+
+
+    .week {
+      background: #e0e0e0;
+    }
+
+    .week.lived {
+      background: #000;
+    }
+
+    .legend {
+      margin-top: 15px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 6px 10px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Memento Mori</h1>
+  <div id="calendar" class="calendar"></div>
+  <button id="reset">Reset birthday</button>
+
+  <script>
+    const WEEKS_PER_YEAR = 52;
+    const YEARS = 80;
+    const WEEKS_PER_DECADE = WEEKS_PER_YEAR * 10;
+    const TOTAL_WEEKS = WEEKS_PER_YEAR * YEARS;
+    const NUM_DECADES = YEARS / 10;
+    const STORAGE_KEY = "memento_birthday";
+
+    function askBirthday() {
+      const input = prompt("Enter your birthday (YYYY-MM-DD):");
+      if (!input) return null;
+
+      const date = new Date(input);
+      if (isNaN(date)) {
+        alert("Invalid date format.");
+        return askBirthday();
+      }
+
+      localStorage.setItem(STORAGE_KEY, date.toISOString());
+      return date;
+    }
+
+    function getBirthday() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? new Date(stored) : askBirthday();
+    }
+
+    function weeksBetween(start, end) {
+      const msPerWeek = 1000 * 60 * 60 * 24 * 7;
+      return Math.floor((end - start) / msPerWeek);
+    }
+
+    function renderCalendar(weeksLived) {
+      const calendar = document.getElementById("calendar");
+      calendar.innerHTML = ""; // clear previous content
+
+      const fragment = document.createDocumentFragment(); // improves performance
+      let decade;
+
+      for (let i = 0; i < TOTAL_WEEKS; i++) {
+        // Start a new decade every WEEKS_PER_DECADE weeks
+        if (i % WEEKS_PER_DECADE === 0) {
+          decade = document.createElement("div");
+          decade.className = "decade";
+          fragment.appendChild(decade);
+        }
+
+        const week = document.createElement("div");
+        week.className = "week";
+
+        if (i < weeksLived) week.classList.add("lived");
+
+        decade.appendChild(week);
+      }
+
+      calendar.appendChild(fragment);
+    }
+
+
+    function init() {
+      const birthday = getBirthday();
+      if (!birthday) return;
+
+      const today = new Date();
+      const weeksLived = weeksBetween(birthday, today);
+
+      renderCalendar(weeksLived);
+    }
+
+    document.getElementById("reset").addEventListener("click", () => {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    });
+
+    init();
+  </script>
+</body>
+</html>
+
