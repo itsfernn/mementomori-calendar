@@ -19,16 +19,24 @@
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      width: 100vw;
-      justify-content: center; 
+      width: 90vw;
+      max-width: 1400px;
+      container-type: inline-size;
+      justify-content: center;
       gap: 20px;
+
     }
 
     .decade {
       display: grid;
-      grid-template-columns: repeat(52, 10px);
-      grid-auto-rows: 10px;
-      gap: 2px;
+      --max-unit-length: calc((100cqw - 20px) / 52 / 2);
+      --max-unit-height: calc((85vh - 20px * 7) / 8 / 10);
+      --unit-size: max(var(--max-unit-length), var(--max-unit-height));
+      --square-size: calc(var(--unit-size) * 0.8);
+      --gap-size: calc(var(--unit-size) * 0.2);
+      grid-template-columns: repeat(52, var(--square-size));
+      grid-auto-rows: var(--square-size);
+      gap: var(--gap-size);
     }
 
     .week {
@@ -62,9 +70,7 @@
       }
       .decade {
         display: grid;
-        --column-size: calc( (90vw - 51 * 2px) / 52 );
-        grid-template-columns: repeat(52, var(--column-size) );
-        grid-auto-rows: var(--column-size);
+        --unit-size: calc(100cqw / 52 );
       }
     }
   </style>
